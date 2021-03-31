@@ -19,7 +19,7 @@ ifeq (,$(KCLI))
 	sudo dnf -y copr enable karmab/kcli
 	sudo dnf -y install kcli
 	[ -e "$(PWD)/.images" ] || mkdir -p $(PWD)/.images
-	kcli create pool -p $(PWD)/.images default
+	kcli create pool -p $(PWD)/.images kcli
 	sudo setfacl -m u:$(shell id -un):rwx $(PWD)/.images
 	kcli create network -c 192.168.122.0/24 default
 endif

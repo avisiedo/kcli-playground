@@ -26,4 +26,5 @@ Create a symbolic link to the profile:
 
 ```shell
 ln -svf profiles/openshift-47-latest.yml kcli_parameters.yml
+KUBE_NAME=mykube make kcli-create
 ```

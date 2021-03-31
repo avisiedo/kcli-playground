@@ -8,3 +8,6 @@ master_memory: 20480
 masters: 1
 workers: 0
 
+# We set kcli for avoiding fill the root filesystem
+# make kcli-prepare-sys create the 'kcli' libvirt pool storage
+pool: kcli
