@@ -1,0 +1,10 @@
+version: latest
+tag: 4.7
+pull_secret: openshift_pull.json
+cluster: mykube
+numcpus: 16
+network: default
+master_memory: 20480
+masters: 1
+workers: 0
+

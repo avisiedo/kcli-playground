@@ -1,0 +1,4 @@
+/.images
+openshift_pull.json
+openshift-install
+kcli_parameters.yml
