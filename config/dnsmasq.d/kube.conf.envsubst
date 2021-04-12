@@ -1,0 +1,16 @@
+# dnsmasq configuration for '${KCLI_KUBE}' mini-cluster
+#
+# This makes sure that all machines are accessible through DNS including
+# SRV and PTR records.
+
+# These zones have their own DNS server
+server=/${KCLI_KUBE}.karmalabs.com/${KCLI_VM_IP}
+
+# Add A records for LDAP and client machines
+address=/*.apps.${KCLI_KUBE}.karmalabs.com/${KCLI_VM_IP}
+address=/apps.${KCLI_KUBE}.karmalabs.com/${KCLI_VM_IP}
+# address=/console-openshift-console.apps.${KCLI_KUBE}.karmalabs.com/${KCLI_VM_IP}
+address=/api.${KCLI_KUBE}.karmalabs.com/${KCLI_VM_IP}
+
+# Add PTR records for all machines
+ptr-record=${KCLI_VM_IP_INVERSE}.in-addr.arpa,api.${KCLI_KUBE}.karmalabs.com
