@@ -66,8 +66,8 @@ kcli-setup-dnsmasq:
 	KCLI_KUBE="$(KCLI_KUBE)" \
 	KCLI_VM_NETWORK="$$( sudo virsh dumpxml $(KCLI_KUBE)-master-0 | xq | jq -r '.domain.devices.interface.source."@network"'))" \
 	KCLI_VM_IP="$$( $(KCLI) info vm $(KCLI_KUBE)-master-0 -f ip | yq -r .ip )" \
-	KCLI_VM_IP_INVERSE="$$( echo '$(KCLI_VM_IP)' | awk -F. '{ print $$4"."$$3"."$$2"."$$1 }')" \
-	envsubst < config/dnsmasq.d/kube.conf.envsubst | sudo tee "/etc/dnsmasq.d/kcli/$(KCLI_KUBE).conf" > /dev/null
+	KCLI_VM_IP_INVERSE="$$( echo "$${KCLI_VM_IP}" | awk -F. '{ print $$4"."$$3"."$$2"."$$1 }')" \
+	  envsubst < config/dnsmasq.d/kube.conf.envsubst # | sudo tee "/etc/dnsmasq.d/kcli/$(KCLI_KUBE).conf" > /dev/null
 	@sudo systemctl reload NetworkManager.service
 	@echo "To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=$(HOME)/.kcli/clusters/$(KCLI_KUBE)/auth/kubeconfig'"
 
