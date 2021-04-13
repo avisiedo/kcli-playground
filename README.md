@@ -22,9 +22,24 @@ make kcli-install
 
 ## Create OpenShift 4.7 cluster
 
-Create a symbolic link to the profile:
+- Create a symbolic link to the profile:
+
+  ```shell
+  ln -svf profiles/openshift-47-latest.yml kcli_parameters.yml
+  make kcli-create
+  ```
+
+- If you lost the chance to set up dnsmasq (sudo actions are required),
+  you can repeat them by:
+
+  ```shell
+  make kcli-setup-dnsmasq
+  ```
+
+## Delete the cluster
+
+Using the same profile, it only needs to execute:
 
 ```shell
-ln -svf profiles/openshift-47-latest.yml kcli_parameters.yml
-KUBE_NAME=mykube make kcli-create
+make kcli-delete
 ```
