@@ -1,12 +1,24 @@
 KCLI = $(shell bash -c 'command -v kcli')
 
+ifeq (,$(shell [ -e kcli_parameters.yml ] && echo "kcli_parameters.yml"))
+$(error Create symbolic link to the wanted profile, such as: 'ln -svf profiles/openshift-47-latest.yml kcli_parameters.yml')
+endif
+
 KCLI_KUBE := $(shell yq -r .cluster kcli_parameters.yml)
 KCLI_POOL := $(shell yq -r .pool kcli_parameters.yml)
+
+ifeq (,$(KCLI_KUBE))
+$(error Cluster need a name at kcli_parameters.yml; Check 'cluster' value.)
+endif
+ifeq (,$(KCLI_POOL))
+KCLI_POOL := default
+endif
 
 
 .PHONY: help
 help:
 	@cat HELP
+
 
 .PHONY: kcli-prepare-sys
 kcli-prepare-sys:
@@ -17,6 +29,7 @@ kcli-prepare-sys:
 	# sudo usermod -aG docker $(shell id -un)
 	# sudo systemctl restart docker
 	# sudo usermod -aG qemu,libvirt $(shell id -un)
+
 
 .PHONY: kcli-install
 kcli-install:
@@ -42,6 +55,11 @@ kcli-create: kcli
 	-kcli create pool -p $(PWD)/.images/$(KCLI_POOL) $(KCLI_POOL)
 	sudo setfacl -m u:$(shell id -un):rwx $(PWD)/.images/$(KCLI_POOL)
 	kcli create cluster openshift $(KCLI_KUBE)
+	@make kcli-setup-dnsmasq
+
+
+.PHONY: kcli-setup-dnsmasq
+kcli-setup-dnsmasq:
 	-@sudo mkdir -p /etc/dnsmasq.d/kcli
 	-@sudo cp -f config/dnsmasq.d/kcli.conf /etc/dnsmasq.d/kcli.conf
 	@ \
@@ -54,16 +72,6 @@ kcli-create: kcli
 	@echo "To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=$(HOME)/.kcli/clusters/$(KCLI_KUBE)/auth/kubeconfig'"
 
 
-.PHONY: demo
-demo:
-	@ \
-	KCLI_VM_NETWORK="default" \
-	KCLI_VM_IP="192.168.1.12" \
-	KCLI_VM_IP_INVERSE="12.1.168.192" \
-	envsubst < config/dnsmasq.d/kube.conf.envsubst
-
-
-
 .PHONY: kcli-kubeadmin-password
 kcli-kubeadmin-password:
 	@cat ~/.kcli/clusters/$(KCLI_KUBE)/auth/kubeadmin-password; echo ""
@@ -72,5 +80,9 @@ kcli-kubeadmin-password:
 .PHONY: kcli-delete
 kcli-delete: kcli
 	kcli delete cluster -y $(KCLI_KUBE)
+	make kcli-unsetup-dnsmasq
+
+.PHONY: kcli-unsetup-dnsmasq
+kcli-unsetup-dnsmasq:
 	sudo rm -vf /etc/dnsmasq.d/kcli/$(KCLI_KUBE).conf
 	@sudo systemctl reload NetworkManager.service
