@@ -5,9 +5,6 @@ Make rules:
   kcli-delete Delete a provisioned cluster from the workstation.
   kcli-kubeadmin-password
               Display the password for kubeadmin user.
-
-Variables
-  KCLI_POOL   Default 'kcli'. The name for the pool storage to be used for
-              storing the VM disks.
-  KCLI_KUBE   Default 'mykube'. The name for the mini-cluster to be used
-              when deploying. This impact into dnsmasq configuration.
+  kcli-setup-dnsmasq
+              If you lost the steps while kcli-create.
+  kcli-unsetup-dnsmasq  
