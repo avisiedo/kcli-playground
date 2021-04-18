@@ -68,8 +68,10 @@ kcli-setup-dnsmasq:
 	KCLI_VM_IP="$$( $(KCLI) info vm $(KCLI_KUBE)-master-0 -f ip | yq -r .ip )" \
 	KCLI_VM_IP_INVERSE="$$( echo "$${KCLI_VM_IP}" | awk -F. '{ print $$4"."$$3"."$$2"."$$1 }')" \
 	  envsubst < config/dnsmasq.d/kube.conf.envsubst | sudo tee "/etc/NetworkManager/dnsmasq.d/kcli/$(KCLI_KUBE).conf" > /dev/null
+	@sudo sed -i '/api.$(KCLI_KUBE).karmalabs.com/d' /etc/hosts
 	@sudo systemctl reload NetworkManager.service
 	@echo "To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=$(HOME)/.kcli/clusters/$(KCLI_KUBE)/auth/kubeconfig'"
+	@echo "oc login -u kubeadmin -p $(shell cat $(HOME)/.kcli/clusters/$(KCLI_KUBE)/auth/kubeadmin-password) https://api.$(KCLI_KUBE).karmalabs.com:6443"
 
 
 .PHONY: kcli-kubeadmin-password
